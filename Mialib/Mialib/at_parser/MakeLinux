@@ -1,0 +1,27 @@
+IDIR =./
+CC=gcc
+CFLAGS=-I$(IDIR)
+
+ODIR=obj
+LDIR =../lib
+
+LIBS=-lm
+
+_DEPS = at_handler.h modem_driver.h os_support.h MakeLinux
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+
+_OBJ = at_handler.o linux_test.o modem_driver.o telit_driver.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+
+$(ODIR)/%.o: %.c $(DEPS)
+	$(CC) -g -D USE_TELIT_DRIVER=1 -D DEBUG=1 -Wall -Werror -c -o $@ $< $(CFLAGS)
+	#$(CC) -g -Wall -Werror -c -o $@ $< $(CFLAGS)
+
+linux_test: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean
+
+clean:
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
